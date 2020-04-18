@@ -14,15 +14,53 @@ const Card_Styles = {
     }
 }
 
+const generateInput = (label, value, setOnChange, inline = false) => {
+    return(
+        <div 
+            style={{display: inline ? 'inline' : 'block'}}
+        >
+            <div
+                style={{display: inline ? 'inline' : 'block'}}
+            >
+                <label htmlFor={label}>{label}</label>
+            </div>
+            
+            <input id={label}
+                value={value}
+                onChange={(event) => setOnChange(event.target.value)} 
+            />
+        </div>
+    )
+}
+
 export default () => {
     const stripe = useStripe()
     const elements = useElements()
 
-    const {cart} = useContext(CartContext)
+    const {cart, clearCart} = useContext(CartContext)
+
+    const [shipping_name, setShipping_name] = useState('')
+    const [shipping_address, setShipping_address] = useState('')
+    const [shipping_state, setShipping_state] = useState('')
+    const [shipping_country, setShipping_country] = useState('')
+    const [shipping_zip, setShipping_zip] = useState('')
 
     const [token, setToken] = useState(null)
     const [total, setTotal] = useState('loading')
+
+    console.log("CheckoutForm.render total", total)
+
     const [loading, setLoading] = useState(false)
+
+    const [success, setSuccess] = useState(null) 
+
+    const valid = () => {
+        if(!shipping_name || !shipping_address || !shipping_state || !shipping_country || !shipping_zip){
+            return false
+        }
+        
+        return true
+    }
 
     const handleSubmit = async (event) => {
         event.preventDefault()
@@ -34,8 +72,31 @@ export default () => {
             }
         })
 
-        console.log("handleSubmit result", result)
+        const data = {
+            paymentIntent: result.paymentIntent,
+            shipping_name,
+            shipping_address,
+            shipping_state,
+            shipping_country,
+            shipping_zip,
+            cart
+        }
+
+        const response = await fetch('http://localhost:1337/orders', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+
+        const order = await response.json()
+
+        setSuccess(true)
+
         setLoading(false)
+
+        clearCart()
     }
 
     useEffect(() => {
@@ -70,17 +131,36 @@ export default () => {
         >
             {!loading && <h3>Total: {formatPrice(total)}</h3>}
             {loading && <h3>Loading</h3>}
-            <form 
-                onSubmit={handleSubmit}
-            >
-                <CardElement options={Card_Styles}/>
-                <button 
-                    style={{marginTop: '12px'}}
-                    disabled={!stripe}
+
+            {!success &&
+                 <form 
+                    style={{
+                        padding: '24px 12px',
+                        border: '1px solid #eee',
+                        margin: '20px 0'
+                    }}
+                    onSubmit={handleSubmit}
                 >
-                    Buy it
-                </button>
-            </form>
+    
+                    {generateInput('Shipping Recipient', shipping_name, setShipping_name)}
+                    {generateInput('Shipping Address', shipping_address, setShipping_address)}
+                    {generateInput('State', shipping_state, setShipping_state)}
+                    {generateInput('Country', shipping_country, setShipping_country)}
+                    {generateInput('Zip', shipping_zip, setShipping_zip)}
+    
+                    <CardElement options={Card_Styles}/>
+                    <button 
+                        style={{marginTop: '12px'}}
+                        disabled={!stripe || !valid()}
+                    >
+                        Buy it
+                    </button>
+                </form>
+            }
+            {success &&
+                <h2>Your order was successfully processed!</h2>
+            }
+           
         </div>
     )
 }

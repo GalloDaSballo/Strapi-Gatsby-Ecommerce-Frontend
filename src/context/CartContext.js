@@ -39,8 +39,13 @@ export default ({children}) => {
         updateCart(copy)
     }
 
+    const clearCart = () => {
+        const updatedCart = []
+        updateCart(updatedCart)
+    }
+
     return(
-        <CartContext.Provider value={{cart, addToCart}}>
+        <CartContext.Provider value={{cart, addToCart, clearCart}}>
             {children}
         </CartContext.Provider>
     )

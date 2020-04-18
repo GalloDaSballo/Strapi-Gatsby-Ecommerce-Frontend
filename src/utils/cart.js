@@ -36,6 +36,10 @@ export const shouldPayShipping = (cart) => {
 }
 
 export const cartTotal = (cart) => {
+    if(cart.lenght === 0 ){
+        return 0
+    }
+    
     const subTotal = cartSubtotal(cart)
 
     const shipping = shouldPayShipping(cart) ? SHIPPING_RATE : 0

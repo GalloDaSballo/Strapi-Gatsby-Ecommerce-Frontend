@@ -5,6 +5,10 @@
  * @parmas {string} - priceWithDecimals representation of price
  */
 export const formatPrice = (priceWithDecimals) => {
+    if(!priceWithDecimals){
+        return 'Please add a product to cart'
+    }
+
     const realPrice = parseInt(priceWithDecimals) / 100
     return realPrice.toLocaleString('en-US', {
         style: 'currency',
