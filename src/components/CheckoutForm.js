@@ -35,7 +35,12 @@ const generateInput = (label, value, setOnChange, inline = false) => {
     )
 }
 
+
+
 export default () => {
+
+    console.log("CheckoutForm.render process.env.API_URL", process.env.API_URL)
+    console.log("CheckoutForm.render API_URL", API_URL)
     const stripe = useStripe()
     const elements = useElements()
 
@@ -83,7 +88,7 @@ export default () => {
             shipping_zip,
             cart
         }
-
+        
         const response = await fetch(`${API_URL}/orders`, {
             method: 'POST',
             headers: {
