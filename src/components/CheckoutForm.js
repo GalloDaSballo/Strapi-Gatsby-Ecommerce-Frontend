@@ -5,7 +5,7 @@ import {CartContext} from '../context/CartContext'
 
 import {formatPrice} from '../utils/format'
 
-import {API_URL} from '../utils/urls'
+import {API_URL} from '../utils/url'
 
 const Card_Styles = {
     style: {
