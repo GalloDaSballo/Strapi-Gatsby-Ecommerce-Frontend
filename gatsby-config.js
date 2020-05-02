@@ -3,6 +3,7 @@ module.exports = {
     title: `Strapi Ecommerce Demo`,
     description: `Sell your stuff with Strapi ;)`,
     author: `@alex_entreprenerd`,
+    apiURL: process.env.API_URL || 'http://localhost:1337'
   },
   plugins: [
     {
